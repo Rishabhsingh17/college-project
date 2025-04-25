@@ -50,7 +50,7 @@ const RaiseIssue: React.FC = () => {
         // formDataWithImage.append('file', formData.image);
         // const uploadResponse = await axios.post('http://localhost:8000/upload', formDataWithImage, {
         //   headers: {
-        //     'Authorization': `Bearer ${token}`,
+        //     'Authorization': Bearer ${token},
         //     'Content-Type': 'multipart/form-data'
         //   }
         // });
@@ -71,13 +71,13 @@ const RaiseIssue: React.FC = () => {
         payload,
         {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            'Authorization': Bearer ${token},
             'Content-Type': 'application/json'
           }
         }
       );
 
-      toast.success(`Issue submitted successfully! Ticket ID: ${response.data.ticket_id}`);
+      toast.success(Issue submitted successfully! Ticket ID: ${response.data.ticket_id});
       setSelectedService(null);
       setFormData({ location: '', description: '', image: null });
       
@@ -101,7 +101,7 @@ const RaiseIssue: React.FC = () => {
   ];
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6">
       <h2 className="text-2xl font-bold mb-6">Raise an Issue</h2>
       
       {!selectedService ? (
@@ -171,11 +171,11 @@ const RaiseIssue: React.FC = () => {
             )}
           </div>
           
-          <div className="flex space-x-4">
+          <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
             <button
               type="button"
               onClick={() => setSelectedService(null)}
-              className="flex-1 py-2 px-4 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="py-2 px-4 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               disabled={isSubmitting}
             >
               Back
@@ -183,7 +183,7 @@ const RaiseIssue: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 py-2 px-4 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-400 disabled:cursor-not-allowed"
+              className="py-2 px-4 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-400 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Submitting...' : 'Submit Issue'}
             </button>
@@ -237,26 +237,27 @@ const RequestDetail: React.FC<{ request: IssueDetails, onClose: () => void }> = 
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="bg-white p-6 rounded-xl shadow-md"
+      className="bg-white p-4 sm:p-6 rounded-xl shadow-md max-h-[90vh] overflow-y-auto"
     >
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xl font-bold">Ticket Details</h3>
         <button 
           onClick={onClose}
           className="p-2 rounded-full hover:bg-gray-100"
+          aria-label="Close"
         >
           &times;
         </button>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         <div>
           <p className="text-sm text-gray-500">Ticket ID</p>
-          <p className="font-medium">{request.ticket_id}</p>
+          <p className="font-medium break-words">{request.ticket_id}</p>
         </div>
         <div>
           <p className="text-sm text-gray-500">Status</p>
-          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(request.status)}`}>
+          <span className={px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(request.status)}}>
             {formatStatus(request.status)}
           </span>
         </div>
@@ -270,13 +271,13 @@ const RequestDetail: React.FC<{ request: IssueDetails, onClose: () => void }> = 
         </div>
         <div>
           <p className="text-sm text-gray-500">Location</p>
-          <p className="font-medium">{request.location}</p>
+          <p className="font-medium break-words">{request.location}</p>
         </div>
       </div>
       
       <div className="mt-6">
         <p className="text-sm text-gray-500">Description</p>
-        <p className="mt-1 text-gray-700">{request.description}</p>
+        <p className="mt-1 text-gray-700 break-words">{request.description}</p>
       </div>
       
       {request.image_url && (
@@ -316,12 +317,12 @@ const TrackRequests: React.FC = () => {
     try {
       // Add status query parameter if filter is not 'all'
       const url = filterStatus !== 'all' 
-        ? `https://college-project-1g9v.onrender.com/issues/my?status=${filterStatus}`
+        ? https://college-project-1g9v.onrender.com/issues/my?status=${filterStatus}
         : 'https://college-project-1g9v.onrender.com/issues/my';
         
       const response = await axios.get(url, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': Bearer ${token}
         }
       });
       
@@ -394,10 +395,10 @@ const TrackRequests: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 sm:gap-0">
         <h2 className="text-2xl font-bold">Track Requests</h2>
-        <div className="flex space-x-4">
+        <div className="flex flex-col sm:flex-row w-full sm:w-auto space-y-3 sm:space-y-0 sm:space-x-4">
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
@@ -411,7 +412,7 @@ const TrackRequests: React.FC = () => {
           </select>
           <button 
             onClick={handleRefresh}
-            className="p-2 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-600"
+            className="p-2 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-600 sm:w-auto"
             aria-label="Refresh"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -453,37 +454,39 @@ const TrackRequests: React.FC = () => {
         </div>
       ) : (
         <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ticket ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {requests.map((request) => (
-                <motion.tr
-                  key={request.id}
-                  whileHover={{ backgroundColor: '#f9fafb' }}
-                  className="hover:bg-gray-50 cursor-pointer"
-                  onClick={() => handleViewDetails(request)}
-                >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{request.ticket_id}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">{request.serviceType}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{request.location}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(request.status)}`}>
-                      {formatStatus(request.status)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{request.dateRaised}</td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ticket ID</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {requests.map((request) => (
+                  <motion.tr
+                    key={request.id}
+                    whileHover={{ backgroundColor: '#f9fafb' }}
+                    className="hover:bg-gray-50 cursor-pointer"
+                    onClick={() => handleViewDetails(request)}
+                  >
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900">{request.ticket_id}</td>
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 capitalize">{request.serviceType}</td>
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 truncate max-w-[100px] sm:max-w-none">{request.location}</td>
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                      <span className={px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(request.status)}}>
+                        {formatStatus(request.status)}
+                      </span>
+                    </td>
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500">{request.dateRaised}</td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
       
@@ -506,36 +509,3 @@ export const StudentDashboard: React.FC = () => {
   
   return (
     <div>
-      <div className="mb-8 flex space-x-4">
-        <Link
-          to="/student/raise-issue"
-          className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium ${
-            location.pathname.includes('raise-issue')
-              ? 'bg-blue-100 text-blue-700'
-              : 'text-gray-600 hover:bg-gray-100'
-          }`}
-        >
-          <Plus className="w-5 h-5 mr-2" />
-          Raise an Issue
-        </Link>
-        <Link
-          to="/student/track-requests"
-          className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium ${
-            location.pathname.includes('track-requests')
-              ? 'bg-blue-100 text-blue-700'
-              : 'text-gray-600 hover:bg-gray-100'
-          }`}
-        >
-          <ClipboardList className="w-5 h-5 mr-2" />
-          Track Requests
-        </Link>
-      </div>
-
-      <Routes>
-        <Route path="raise-issue" element={<RaiseIssue />} />
-        <Route path="track-requests" element={<TrackRequests />} />
-        <Route path="*" element={<RaiseIssue />} />
-      </Routes>
-    </div>
-  );
-};
