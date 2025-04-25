@@ -133,35 +133,37 @@ export const ManagementDashboard: React.FC = () => {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-2 sm:px-0">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-2xl font-bold text-gray-900">Maintenance Requests</h1>
         
-        <div className="flex items-center space-x-4">
-          <div className="relative">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
+          <div className="relative w-full sm:w-auto">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
               placeholder="Search requests..."
               value={filter.search}
               onChange={(e) => setFilter({ ...filter, search: e.target.value })}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full sm:w-auto pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
           
-          <div className="flex items-center space-x-2">
-            <Filter className="text-gray-400 w-5 h-5" />
-            <select
-              value={filter.status}
-              onChange={(e) => setFilter({ ...filter, status: e.target.value })}
-              className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="in_progress">In Progress</option>
-              <option value="completed">Completed</option>
-              <option value="rejected">Rejected</option>
-            </select>
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            <div className="flex items-center gap-2">
+              <Filter className="text-gray-400 w-5 h-5" />
+              <select
+                value={filter.status}
+                onChange={(e) => setFilter({ ...filter, status: e.target.value })}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="in_progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
             
             <select
               value={filter.serviceType}
@@ -181,71 +183,78 @@ export const ManagementDashboard: React.FC = () => {
       </div>
 
       <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Request</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {filteredRequests.length > 0 ? (
-              filteredRequests.map((request) => (
-                <motion.tr
-                  key={request.id}
-                  whileHover={{ backgroundColor: '#f9fafb' }}
-                  className="hover:bg-gray-50"
-                >
-                  <td className="px-6 py-4">
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium text-gray-900">{request.ticket_id}</span>
-                      <span className="text-sm text-gray-500">{request.description}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center">
-                      <span className="flex-shrink-0 text-gray-500">
-                        {getServiceIcon(request.service_type)}
-                      </span>
-                      <span className="ml-2 text-sm text-gray-900 capitalize">{request.service_type.replace('_', ' ')}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{request.location}</td>
-                  <td className="px-6 py-4">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(request.status)}`}>
-                      {request.status.replace('_', ' ')}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{request.student_name}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{formatDate(request.timestamp)}</td>
-                  <td className="px-6 py-4 text-sm">
-                    <select
-                      value={request.status}
-                      onChange={(e) => handleStatusChange(request.ticket_id, e.target.value)}
-                      className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="pending">Pending</option>
-                      <option value="in_progress">In Progress</option>
-                      <option value="completed">Completed</option>
-                      <option value="rejected">Rejected</option>
-                    </select>
-                  </td>
-                </motion.tr>
-              ))
-            ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
               <tr>
-                <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
-                  No requests found
-                </td>
+                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Request</th>
+                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
+                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="hidden sm:table-cell px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                <th className="hidden sm:table-cell px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredRequests.length > 0 ? (
+                filteredRequests.map((request) => (
+                  <motion.tr
+                    key={request.id}
+                    whileHover={{ backgroundColor: '#f9fafb' }}
+                    className="hover:bg-gray-50"
+                  >
+                    <td className="px-4 sm:px-6 py-2 sm:py-4">
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-900">{request.ticket_id}</span>
+                        <span className="text-xs sm:text-sm text-gray-500 truncate max-w-[150px] sm:max-w-none">{request.description}</span>
+                        {/* Mobile-only student and date info */}
+                        <div className="flex flex-col sm:hidden mt-1 text-xs text-gray-500">
+                          <span>{request.student_name}</span>
+                          <span>{formatDate(request.timestamp)}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 sm:px-6 py-2 sm:py-4">
+                      <div className="flex items-center">
+                        <span className="flex-shrink-0 text-gray-500">
+                          {getServiceIcon(request.service_type)}
+                        </span>
+                        <span className="ml-2 text-xs sm:text-sm text-gray-900 capitalize">{request.service_type.replace('_', ' ')}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm text-gray-500 truncate max-w-[100px] sm:max-w-none">{request.location}</td>
+                    <td className="px-4 sm:px-6 py-2 sm:py-4">
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(request.status)}`}>
+                        {request.status.replace('_', ' ')}
+                      </span>
+                    </td>
+                    <td className="hidden sm:table-cell px-4 sm:px-6 py-2 sm:py-4 text-sm text-gray-500">{request.student_name}</td>
+                    <td className="hidden sm:table-cell px-4 sm:px-6 py-2 sm:py-4 text-sm text-gray-500">{formatDate(request.timestamp)}</td>
+                    <td className="px-4 sm:px-6 py-2 sm:py-4 text-xs sm:text-sm">
+                      <select
+                        value={request.status}
+                        onChange={(e) => handleStatusChange(request.ticket_id, e.target.value)}
+                        className="border border-gray-300 rounded-md px-1 sm:px-2 py-1 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full min-w-[90px]"
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                        <option value="rejected">Rejected</option>
+                      </select>
+                    </td>
+                  </motion.tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
+                    No requests found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
