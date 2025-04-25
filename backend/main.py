@@ -15,7 +15,7 @@ from enum import Enum
 import ssl
 
 # MongoDB setup
-MONGO_URI = "mongodb+srv://Rishabh141:Rishabh17@db1.fkymhaz.mongodb.net/?retryWrites=true&w=majority&appName=db1"
+MONGO_URI = "mongodb+srv://dheerendraghoshghosh6:qwertyuiop12345@cluster0.kqmswt1.mongodb.net/db1"
 
 # Initialize client as None to handle connection failure gracefully
 client = None
