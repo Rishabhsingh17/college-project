@@ -12,11 +12,11 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 import uuid
 from enum import Enum
-
+import ssl
 # MongoDB setup
 MONGO_URI = "mongodb+srv://Rishabh141:Rishabh17@db1.fkymhaz.mongodb.net/?retryWrites=true&w=majority&appName=db1"
 # At the top of your file, add:
-import ssl
+
 
 # Replace your MongoDB connection code with:
 try:
@@ -52,7 +52,7 @@ app = FastAPI(title="Campus Fix API")
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173,https://piet-maintenance.netlify.app/"],  # In production, specify exact origins
+    allow_origins=["http://localhost:5173","https://piet-maintenance.netlify.app/"],  # In production, specify exact origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -445,17 +445,16 @@ async def filter_issues(
         issue["id"] = str(issue.pop("_id"))
     
     return issues
+    
 @app.get("/health")
 async def health_check_get():
     try:
-        # Use a simple ping with timeout to check MongoDB connection
         client.admin.command('ping', serverSelectionTimeoutMS=2000)
         return {"status": "ok", "message": "GET: MongoDB is connected"}
     except Exception as e:
-        # Log the error for debugging
         print(f"Health check error: {e}")
-        # Return a more informative error
-        return {"status": "error", "message": str(e)}, 500
+        # Proper FastAPI error response
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 if __name__ == "__main__":
