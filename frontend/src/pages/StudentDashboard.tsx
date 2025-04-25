@@ -50,7 +50,7 @@ const RaiseIssue: React.FC = () => {
         // formDataWithImage.append('file', formData.image);
         // const uploadResponse = await axios.post('http://localhost:8000/upload', formDataWithImage, {
         //   headers: {
-        //     'Authorization': Bearer ${token},
+        //     'Authorization': `Bearer ${token}`,
         //     'Content-Type': 'multipart/form-data'
         //   }
         // });
@@ -71,13 +71,13 @@ const RaiseIssue: React.FC = () => {
         payload,
         {
           headers: {
-            'Authorization': Bearer ${token},
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         }
       );
 
-      toast.success(Issue submitted successfully! Ticket ID: ${response.data.ticket_id});
+      toast.success(`Issue submitted successfully! Ticket ID: ${response.data.ticket_id}`);
       setSelectedService(null);
       setFormData({ location: '', description: '', image: null });
       
@@ -257,7 +257,7 @@ const RequestDetail: React.FC<{ request: IssueDetails, onClose: () => void }> = 
         </div>
         <div>
           <p className="text-sm text-gray-500">Status</p>
-          <span className={px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(request.status)}}>
+          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(request.status)}`}>
             {formatStatus(request.status)}
           </span>
         </div>
@@ -317,12 +317,12 @@ const TrackRequests: React.FC = () => {
     try {
       // Add status query parameter if filter is not 'all'
       const url = filterStatus !== 'all' 
-        ? https://college-project-1g9v.onrender.com/issues/my?status=${filterStatus}
+        ? `https://college-project-1g9v.onrender.com/issues/my?status=${filterStatus}`
         : 'https://college-project-1g9v.onrender.com/issues/my';
         
       const response = await axios.get(url, {
         headers: {
-          'Authorization': Bearer ${token}
+          'Authorization': `Bearer ${token}`
         }
       });
       
@@ -477,7 +477,7 @@ const TrackRequests: React.FC = () => {
                     <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 capitalize">{request.serviceType}</td>
                     <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 truncate max-w-[100px] sm:max-w-none">{request.location}</td>
                     <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
-                      <span className={px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(request.status)}}>
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(request.status)}`}>
                         {formatStatus(request.status)}
                       </span>
                     </td>
@@ -509,3 +509,35 @@ export const StudentDashboard: React.FC = () => {
   
   return (
     <div>
+      <div className="mb-8 flex flex-wrap gap-3 px-4 sm:px-6">
+        <Link
+          to="/student/raise-issue"
+          className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium ${
+            location.pathname.includes('raise-issue')
+              ? 'bg-blue-100 text-blue-700'
+              : 'text-gray-600 hover:bg-gray-100'
+          }`}
+        >
+          <Plus className="w-5 h-5 mr-2" />
+          Raise an Issue
+        </Link>
+        <Link
+          to="/student/track-requests"
+          className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium ${
+            location.pathname.includes('track-requests')
+              ? 'bg-blue-100 text-blue-700'
+              : 'text-gray-600 hover:bg-gray-100'
+          }`}
+        >
+          <ClipboardList className="w-5 h-5 mr-2" />
+          Track Requests
+        </Link>
+      </div>
+
+      <Routes>
+        <Route path="raise-issue" element={<RaiseIssue />} />
+        <Route path="track-requests" element={<TrackRequests />} />
+      </Routes>
+    </div>
+  );
+};
