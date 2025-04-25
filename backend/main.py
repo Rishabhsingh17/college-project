@@ -37,7 +37,7 @@ app = FastAPI(title="Campus Fix API")
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173,https://piet-maintenance.netlify.app/"],  # In production, specify exact origins
+    allow_origins=["http://localhost:5173","https://piet-maintenance.netlify.app"],  # In production, specify exact origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
