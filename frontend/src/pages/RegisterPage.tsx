@@ -52,7 +52,7 @@ export const RegisterPage: React.FC = () => {
       formDataToSend.append('user_type', formData.userType);
       formDataToSend.append('password', formData.password);
 
-      const response = await axios.post('http://localhost:8000/register', formDataToSend);
+      const response = await axios.post('https://college-project-1g9v.onrender.com/register', formDataToSend);
 
       toast.success('Registration successful!');
       navigate('/');
