@@ -431,14 +431,14 @@ async def filter_issues(
     
     return issues
 
-@app.post("/health")
-async def health_check():
+@app.get("/health")
+async def health_check_get():
     try:
-        # Ping the DB
         db.command("ping")
-        return {"status": "ok", "message": "MongoDB is connected"}
+        return {"status": "ok", "message": "GET: MongoDB is connected"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 if __name__ == "__main__":
     import uvicorn
