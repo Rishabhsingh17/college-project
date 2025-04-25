@@ -27,7 +27,7 @@ export const LoginPage: React.FC = () => {
       requestData.append('college_id', formData.id);
       requestData.append('password', formData.password);
 
-      const response = await axios.post('http://localhost:8000/login', requestData, {
+      const response = await axios.post('https://college-project-1g9v.onrender.com/login', requestData, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
