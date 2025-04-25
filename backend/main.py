@@ -15,10 +15,25 @@ from enum import Enum
 
 # MongoDB setup
 MONGO_URI = "mongodb+srv://Rishabh141:Rishabh17@db1.fkymhaz.mongodb.net/?retryWrites=true&w=majority&appName=db1"
-client = MongoClient(MONGO_URI)
-db = client["campus_fix"]
-users_collection = db["users"]
-issues_collection = db["issues"]
+# At the top of your file, add:
+import ssl
+
+# Replace your MongoDB connection code with:
+try:
+    client = MongoClient(
+        MONGO_URI,
+        ssl=True,
+        ssl_cert_reqs=ssl.CERT_NONE,  # This is the key fix for your SSL issue
+        serverSelectionTimeoutMS=5000
+    )
+    # Test connection immediately
+    client.admin.command('ping')
+    print("MongoDB connection successful")
+    db = client["campus_fix"]
+    users_collection = db["users"]
+    issues_collection = db["issues"]
+except Exception as e:
+    print(f"MongoDB connection error: {str(e)}")
 
 # JWT settings
 SECRET_KEY = "your-secret-key"  # In production, use a secure random key
