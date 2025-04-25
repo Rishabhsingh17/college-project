@@ -67,7 +67,7 @@ const RaiseIssue: React.FC = () => {
       };
 
       const response = await axios.post(
-        'http://localhost:8000/issues/raise',
+        'https://college-project-1g9v.onrender.com/issues/raise',
         payload,
         {
           headers: {
@@ -316,8 +316,8 @@ const TrackRequests: React.FC = () => {
     try {
       // Add status query parameter if filter is not 'all'
       const url = filterStatus !== 'all' 
-        ? `http://localhost:8000/issues/my?status=${filterStatus}`
-        : 'http://localhost:8000/issues/my';
+        ? `https://college-project-1g9v.onrender.com/issues/my?status=${filterStatus}`
+        : 'https://college-project-1g9v.onrender.com/issues/my';
         
       const response = await axios.get(url, {
         headers: {
