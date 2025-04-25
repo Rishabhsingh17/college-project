@@ -37,7 +37,7 @@ app = FastAPI(title="Campus Fix API")
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173","https://piet-maintenance.netlify.app"],  # In production, specify exact origins
+    allow_origins=["http://localhost:5173,https://piet-maintenance.netlify.app/"],  # In production, specify exact origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -430,14 +430,17 @@ async def filter_issues(
         issue["id"] = str(issue.pop("_id"))
     
     return issues
-
 @app.get("/health")
 async def health_check_get():
     try:
-        db.command("ping")
+        # Use a simple ping with timeout to check MongoDB connection
+        client.admin.command('ping', serverSelectionTimeoutMS=2000)
         return {"status": "ok", "message": "GET: MongoDB is connected"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # Log the error for debugging
+        print(f"Health check error: {e}")
+        # Return a more informative error
+        return {"status": "error", "message": str(e)}, 500
 
 
 if __name__ == "__main__":
