@@ -28,7 +28,7 @@ export const ManagementDashboard: React.FC = () => {
 
   const fetchRequests = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/issues/all', {
+      const response = await axios.get('https://college-project-1g9v.onrender.com/issues/all', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -68,7 +68,7 @@ export const ManagementDashboard: React.FC = () => {
     try {
       // Update API endpoint to use ticket_id
       await axios.put(
-        `http://localhost:8000/issues/mark-complete/${ticketId}`,
+        `https://college-project-1g9v.onrender.com/issues/mark-complete/${ticketId}`,
         { status: newStatus },
         {
           headers: {
