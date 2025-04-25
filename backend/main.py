@@ -13,17 +13,24 @@ from passlib.context import CryptContext
 import uuid
 from enum import Enum
 import ssl
+
 # MongoDB setup
 MONGO_URI = "mongodb+srv://Rishabh141:Rishabh17@db1.fkymhaz.mongodb.net/?retryWrites=true&w=majority&appName=db1"
-# At the top of your file, add:
 
+# Initialize client as None to handle connection failure gracefully
+client = None
+db = None
+users_collection = None
+issues_collection = None
 
-# Replace your MongoDB connection code with:
+# Try to connect to MongoDB
 try:
+    # Updated MongoDB connection parameters
     client = MongoClient(
         MONGO_URI,
         ssl=True,
-        ssl_cert_reqs=ssl.CERT_NONE,  # This is the key fix for your SSL issue
+        tls=True,  # Updated from ssl_cert_reqs
+        tlsAllowInvalidCertificates=True,  # Equivalent to ssl.CERT_NONE
         serverSelectionTimeoutMS=5000
     )
     # Test connection immediately
@@ -34,6 +41,7 @@ try:
     issues_collection = db["issues"]
 except Exception as e:
     print(f"MongoDB connection error: {str(e)}")
+    # We'll continue even with failed connection and handle errors at endpoint level
 
 # JWT settings
 SECRET_KEY = "your-secret-key"  # In production, use a secure random key
@@ -52,7 +60,7 @@ app = FastAPI(title="Campus Fix API")
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173","https://piet-maintenance.netlify.app/"],  # In production, specify exact origins
+    allow_origins=["http://localhost:5173", "https://piet-maintenance.netlify.app"],  # Fixed array syntax
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -142,6 +150,11 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 def get_user_by_email(email: str):
+    if users_collection is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Database connection unavailable"
+        )
     user = users_collection.find_one({"email": email})
     if user:
         return UserInDB(**user)
@@ -156,6 +169,11 @@ def authenticate_user(college_id: str, password: str):
     return user
 
 def get_user_by_college_id(college_id: str):
+    if users_collection is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Database connection unavailable"
+        )
     user = users_collection.find_one({"college_id": college_id})
     if user:
         return UserInDB(**user)
@@ -200,22 +218,20 @@ class JSONEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, o)
 
 # API Routes
-# Update the UserBase model to include email
-class UserBase(BaseModel):
-    name: str
-    email: str  # Added email field
-    college_id: str
-    user_type: UserType
-
-# Update the register function to accept email
 @app.post("/register", response_model=User)
 async def register(
     name: str = Form(...),
-    email: str = Form(...),  # Add email parameter
+    email: str = Form(...),
     college_id: str = Form(...),
     user_type: UserType = Form(...),
     password: str = Form(...)
 ):
+    if users_collection is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Database connection unavailable"
+        )
+    
     # Check if college_id already exists
     db_user = get_user_by_college_id(college_id)
     if db_user:
@@ -237,7 +253,7 @@ async def register(
     
     user_in_db = UserInDB(
         name=name,
-        email=email,  # Include email
+        email=email,
         college_id=college_id,
         user_type=user_type,
         hashed_password=hashed_password
@@ -248,7 +264,7 @@ async def register(
         result = users_collection.insert_one(user_in_db.dict())
         return User(
             name=name,
-            email=email,  # Include email in response
+            email=email,
             college_id=college_id,
             user_type=user_type,
             id=str(result.inserted_id)
@@ -259,7 +275,6 @@ async def register(
             detail=str(e)
         )
 
-# Update the login function to also update the JWT token with the email
 @app.post("/login")
 async def login(
     college_id: str = Form(...),
@@ -275,7 +290,7 @@ async def login(
     
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.email},  # Use email for JWT token
+        data={"sub": user.email},
         expires_delta=access_token_expires
     )
     
@@ -284,11 +299,18 @@ async def login(
         "token_type": "bearer",
         "user_type": user.user_type
     }
+
 @app.post("/issues/raise", response_model=Issue)
 async def raise_issue(
     issue: IssueCreate, 
     current_user: UserInDB = Depends(get_current_student)
 ):
+    if issues_collection is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Database connection unavailable"
+        )
+    
     # Generate unique ticket ID
     ticket_id = f"TKT-{uuid.uuid4().hex[:8].upper()}"
     
@@ -314,6 +336,12 @@ async def get_my_issues(
     status: Optional[Status] = None,
     current_user: UserInDB = Depends(get_current_student)
 ):
+    if issues_collection is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Database connection unavailable"
+        )
+    
     query = {"student_id": current_user.id}
     
     if status:
@@ -334,6 +362,12 @@ async def get_all_issues(
     location: Optional[str] = None,
     current_user: UserInDB = Depends(get_current_management)
 ):
+    if issues_collection is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Database connection unavailable"
+        )
+    
     query = {}
     
     if status:
@@ -359,6 +393,12 @@ async def mark_issue_complete(
     update: IssueUpdate,
     current_user: UserInDB = Depends(get_current_management)
 ):
+    if issues_collection is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Database connection unavailable"
+        )
+    
     issue = issues_collection.find_one({"ticket_id": ticket_id})
     
     if not issue:
@@ -390,6 +430,12 @@ async def get_issue_by_id(
     ticket_id: str,
     current_user: UserInDB = Depends(get_current_user)
 ):
+    if issues_collection is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Database connection unavailable"
+        )
+    
     issue = issues_collection.find_one({"ticket_id": ticket_id})
     
     if not issue:
@@ -418,6 +464,12 @@ async def filter_issues(
     date_to: Optional[str] = None,
     current_user: UserInDB = Depends(get_current_management)
 ):
+    if issues_collection is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Database connection unavailable"
+        )
+    
     query = {}
     
     if status:
@@ -449,12 +501,23 @@ async def filter_issues(
 @app.get("/health")
 async def health_check_get():
     try:
+        # Check if client is initialized first
+        if client is None:
+            return {
+                "status": "error", 
+                "message": "MongoDB client is not initialized",
+                "details": "Check server logs for connection errors"
+            }
+        
+        # Now safely try to ping MongoDB
         client.admin.command('ping', serverSelectionTimeoutMS=2000)
         return {"status": "ok", "message": "GET: MongoDB is connected"}
     except Exception as e:
         print(f"Health check error: {e}")
-        # Proper FastAPI error response
-        raise HTTPException(status_code=500, detail=str(e))
+        return {
+            "status": "error",
+            "message": f"MongoDB health check failed: {str(e)}"
+        }
 
 
 if __name__ == "__main__":
