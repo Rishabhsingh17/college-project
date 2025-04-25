@@ -56,7 +56,7 @@ export const LoginPage: React.FC = () => {
           <div className="flex justify-center">
             <Wrench className="h-12 w-12 text-blue-600" />
           </div>
-          <h2 className="mt-6 text-3xl font-bold text-gray-900">CampusFix</h2>
+          <h2 className="mt-6 text-3xl font-bold text-gray-900">PIET Maintenance</h2>
           <p className="mt-2 text-sm text-gray-600">Bringing seamless campus issue resolution</p>
         </div>
 

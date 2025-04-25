@@ -20,14 +20,31 @@ export const RegisterPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (formData.password !== formData.confirmPassword) {
       toast.error('Passwords do not match!');
       return;
     }
-    
+
+    // Custom validation for student and management users
+    if (formData.userType === 'student') {
+      if (!formData.email.endsWith('@poornima.org')) {
+        toast.error('Students must register with a @poornima.org email!');
+        return;
+      }
+    } else if (formData.userType === 'management') {
+      const allowedEmails = [
+        'aares0017@gmail.com',
+        'staff1@example.com', // replace with real email
+        'staff2@example.com', // replace with real email
+      ];
+      if (!allowedEmails.includes(formData.email)) {
+        toast.error('Only authorized maintenance staff can register.');
+        return;
+      }
+    }
+
     try {
-      // Create FormData object for the request
       const formDataToSend = new FormData();
       formDataToSend.append('name', formData.name);
       formDataToSend.append('email', formData.email);
@@ -36,12 +53,11 @@ export const RegisterPage: React.FC = () => {
       formDataToSend.append('password', formData.password);
 
       const response = await axios.post('http://localhost:8000/register', formDataToSend);
-      
+
       toast.success('Registration successful!');
       navigate('/');
     } catch (error: any) {
       if (error.response) {
-        // Handle the error message safely
         const errorMessage = error.response.data.detail || 'Registration failed';
         toast.error(typeof errorMessage === 'string' ? errorMessage : 'Registration failed');
       } else {
@@ -65,7 +81,7 @@ export const RegisterPage: React.FC = () => {
             <Wrench className="h-12 w-12 text-blue-600" />
           </div>
           <h2 className="mt-6 text-3xl font-bold text-gray-900">Create Account</h2>
-          <p className="mt-2 text-sm text-gray-600">Join CampusFix today</p>
+          <p className="mt-2 text-sm text-gray-600">Join PIET Maintenance today</p>
         </div>
 
         <motion.form

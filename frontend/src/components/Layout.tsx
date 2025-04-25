@@ -36,7 +36,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                 {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
               <Link to="/dashboard" className="flex items-center">
-                <span className="text-2xl font-bold text-blue-600">CampusFix</span>
+                <span className="text-2xl font-bold text-blue-600">PIET Maintenance</span>
               </Link>
             </div>
             <div className="flex items-center">
